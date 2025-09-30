@@ -15,7 +15,6 @@ A junior developer implemented some domain logic in a time deposit system but di
       - balance
       - days
       - withdrawals
-  - Choose any API framework you prefer.
 
 2. **Database Setup**:
   - Store all time deposit plans in a database.
@@ -50,9 +49,12 @@ A junior developer implemented some domain logic in a time deposit system but di
 - Your final solution should include **two API endpoints**. Do not develop additional endpoints.
 - **Do not** create a pull request or a new branch in the ikigai-digital repository. Instead, fork this repository into your own GitHub repository and develop the solution there.
 - No need to handle invalid input / exceptions.
+- You can use any tools, frameworks, libraries, etc. that you find suitable.
+- In case of ambiguity, make logical assumptions and justify them in your code comments.
 
-## Bonus
-- Embrace Hexagonal Architecture, Clean Architecture, or any other architectural patterns that you find suitable.
+## Required Stack
+- Use OpenAPI swagger contract
+- Embrace Hexagonal Architecture
 - Atomic commits
 - Test containers
 
