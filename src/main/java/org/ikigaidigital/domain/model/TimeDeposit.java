@@ -1,5 +1,9 @@
-package org.ikigaidigital;
+package org.ikigaidigital.domain.model;
 
+/**
+ * Domain model representing a time deposit account.
+ * This is a pure POJO with no framework dependencies.
+ */
 public class TimeDeposit {
     private int id;
     private String planType;

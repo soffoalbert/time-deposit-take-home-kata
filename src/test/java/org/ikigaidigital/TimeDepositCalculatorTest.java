@@ -1,5 +1,6 @@
 package org.ikigaidigital;
 
+import org.ikigaidigital.domain.model.TimeDeposit;
 import org.ikigaidigital.domain.model.TimeDepositCalculator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

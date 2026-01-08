@@ -963,10 +963,11 @@ open target/site/jacoco/index.html
 
 These files must remain unchanged:
 
-1. **`src/main/java/org/ikigaidigital/TimeDeposit.java`**
+1. **`src/main/java/org/ikigaidigital/domain/model/TimeDeposit.java`** (moved from root package)
    - Do NOT modify any code
    - Do NOT change class signature
    - Do NOT add annotations
+   - Package updated to `org.ikigaidigital.domain.model`
 
 2. **`src/main/java/org/ikigaidigital/domain/model/TimeDepositCalculator.java`** (moved from root package)
    - Do NOT change method signature of `updateBalance(List<TimeDeposit> xs)`
