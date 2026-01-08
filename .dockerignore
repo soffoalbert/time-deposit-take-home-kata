@@ -1,0 +1,39 @@
+# =============================================================================
+# Docker ignore file for XA Bank Time Deposit Application
+# =============================================================================
+
+# Git
+.git
+.gitignore
+
+# IDE files
+.idea
+*.iml
+.vscode
+*.swp
+*.swo
+
+# Build outputs (will be rebuilt in container)
+target/
+!target/*.jar
+
+# Documentation
+*.md
+documentation/
+
+# Docker files (prevent recursive copying)
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Test files (not needed in production image)
+src/test/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
