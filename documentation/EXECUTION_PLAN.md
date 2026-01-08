@@ -200,11 +200,16 @@ docker-compose down
 - `src/main/java/org/ikigaidigital/infrastructure/adapter/input/rest/.gitkeep`
 - `src/main/java/org/ikigaidigital/infrastructure/adapter/input/rest/dto/.gitkeep`
 - `src/main/java/org/ikigaidigital/infrastructure/adapter/output/persistence/.gitkeep`
+- `src/main/java/org/ikigaidigital/infrastructure/adapter/output/persistence/entity/.gitkeep`
 - `src/main/java/org/ikigaidigital/infrastructure/config/.gitkeep`
 - `src/main/java/org/ikigaidigital/shared/mapper/.gitkeep`
 
 **Changes:**
 - Create empty directories with .gitkeep files to establish package structure
+
+> **Architecture Note:**
+> - `domain/model/` - Pure domain models (POJOs, no framework annotations)
+> - `infrastructure/adapter/output/persistence/entity/` - JPA entities with framework annotations
 
 **Verification:**
 ```bash
@@ -277,7 +282,7 @@ docker-compose exec postgres psql -U timedeposit -d timedeposit -c "SELECT * FRO
 ### Commit 13: `feat(entity): create TimeDepositEntity JPA entity`
 
 **Files Created:**
-- `src/main/java/org/ikigaidigital/domain/model/TimeDepositEntity.java`
+- `src/main/java/org/ikigaidigital/infrastructure/adapter/output/persistence/entity/TimeDepositEntity.java`
 
 **Changes:**
 - Create JPA entity mapping to `time_deposits` table
@@ -285,6 +290,9 @@ docker-compose exec postgres psql -U timedeposit -d timedeposit -c "SELECT * FRO
 - Add @Column mappings for all fields
 - Add @OneToMany relationship to WithdrawalEntity (to be created)
 - Include getters, setters, constructors
+
+> **Note:** JPA entities belong in the infrastructure layer, not domain layer.
+> This follows Hexagonal Architecture where the domain is framework-agnostic.
 
 **Verification:**
 ```bash
@@ -297,7 +305,7 @@ mvn clean compile
 ### Commit 14: `feat(entity): create WithdrawalEntity JPA entity`
 
 **Files Created:**
-- `src/main/java/org/ikigaidigital/domain/model/WithdrawalEntity.java`
+- `src/main/java/org/ikigaidigital/infrastructure/adapter/output/persistence/entity/WithdrawalEntity.java`
 
 **Changes:**
 - Create JPA entity mapping to `withdrawals` table
@@ -305,6 +313,8 @@ mvn clean compile
 - Add @ManyToOne relationship to TimeDepositEntity
 - Add @Column mappings for amount, withdrawal_date
 - Include getters, setters, constructors
+
+> **Note:** JPA entities belong in the infrastructure layer, not domain layer.
 
 **Verification:**
 ```bash
@@ -513,14 +523,19 @@ mvn clean compile
 
 ---
 
-### Commit 25: `refactor(calculator): make TimeDepositCalculator a Spring bean`
+### Commit 25: `feat(config): configure TimeDepositCalculator as Spring bean`
 
-**Files Modified:**
-- `src/main/java/org/ikigaidigital/TimeDepositCalculator.java`
+**Files Created:**
+- `src/main/java/org/ikigaidigital/infrastructure/config/DomainBeanConfig.java`
 
 **Changes:**
-- Add @Component annotation to class
+- Create configuration class with @Configuration annotation
+- Add @Bean method to create TimeDepositCalculator instance
+- Keep TimeDepositCalculator class free of framework annotations (pure domain)
 - **DO NOT** change the `updateBalance` method signature
+
+> **Note:** Domain classes should not have @Component annotation.
+> Spring configuration belongs in the infrastructure layer via @Bean.
 
 **Verification:**
 ```bash
@@ -940,7 +955,7 @@ open target/site/jacoco/index.html
 
 ### Files NOT to Modify
 
-These files must remain unchanged (except for adding @Component annotation to TimeDepositCalculator):
+These files must remain unchanged:
 
 1. **`src/main/java/org/ikigaidigital/TimeDeposit.java`**
    - Do NOT modify any code
@@ -950,18 +965,35 @@ These files must remain unchanged (except for adding @Component annotation to Ti
 2. **`src/main/java/org/ikigaidigital/TimeDepositCalculator.java`**
    - Do NOT change method signature of `updateBalance(List<TimeDeposit> xs)`
    - Do NOT modify the calculation logic
-   - CAN add `@Component` annotation for Spring DI
+   - Do NOT add @Component annotation (domain class must be framework-agnostic)
+   - Spring bean configuration is done via @Bean in DomainBeanConfig.java
+
+### Hexagonal Architecture Guidelines
+
+**Domain Layer (framework-agnostic):**
+- `domain/model/` - Pure domain models (POJOs only)
+- `domain/port/input/` - Input port interfaces
+- `domain/port/output/` - Output port interfaces
+- `domain/service/` - Domain service implementations
+
+**Infrastructure Layer (framework-specific):**
+- `infrastructure/adapter/input/rest/` - REST controllers
+- `infrastructure/adapter/output/persistence/` - Repository adapters
+- `infrastructure/adapter/output/persistence/entity/` - JPA entities
+- `infrastructure/config/` - Spring configuration (@Bean, @Configuration)
 
 ### New Files Summary
 
-**Java Classes (16):**
+**Java Classes (17):**
 - TimeDepositApplication.java
-- TimeDepositEntity.java
-- WithdrawalEntity.java
+- TimeDepositEntity.java (in infrastructure/adapter/output/persistence/entity/)
+- WithdrawalEntity.java (in infrastructure/adapter/output/persistence/entity/)
 - TimeDepositRepositoryPort.java
 - WithdrawalRepositoryPort.java
 - JpaTimeDepositRepository.java
 - JpaWithdrawalRepository.java
+- TimeDepositRepositoryAdapter.java
+- WithdrawalRepositoryAdapter.java
 - WithdrawalDTO.java
 - TimeDepositResponseDTO.java
 - UpdateBalancesResponseDTO.java
@@ -969,19 +1001,23 @@ These files must remain unchanged (except for adding @Component annotation to Ti
 - TimeDepositServicePort.java
 - TimeDepositServiceImpl.java
 - OpenApiConfig.java
+- DomainBeanConfig.java
 - TimeDepositController.java
 
-**Test Classes (5):**
-- TimeDepositRepositoryIntegrationTest.java
+**Test Classes (6):**
 - TimeDepositMapperTest.java
 - TimeDepositServiceImplTest.java
 - TimeDepositControllerIntegrationTest.java
+- AbstractIntegrationTest.java
+- TimeDepositApiIntegrationTest.java
 - (Updated) TimeDepositCalculatorTest.java
 
-**Configuration Files (9):**
+**Configuration Files (11):**
 - application.yml
 - application-local.yml
 - application-docker.yml
+- application-test.yml
+- testcontainers.properties
 - V1__create_time_deposits_table.sql
 - V2__create_withdrawals_table.sql
 - V3__seed_sample_data.sql
