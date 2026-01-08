@@ -1,0 +1,18 @@
+# Docker profile for containerized deployment
+# Database connection is configured via environment variables
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/timedeposit}
+    username: ${SPRING_DATASOURCE_USERNAME:timedeposit}
+    password: ${SPRING_DATASOURCE_PASSWORD:timedeposit123}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    org.ikigaidigital: INFO
+    org.hibernate.SQL: WARN
+
