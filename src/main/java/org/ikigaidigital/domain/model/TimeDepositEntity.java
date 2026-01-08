@@ -3,6 +3,8 @@ package org.ikigaidigital.domain.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JPA Entity representing a time deposit account.
@@ -30,6 +32,9 @@ public class TimeDepositEntity {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "timeDeposit", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<WithdrawalEntity> withdrawals = new ArrayList<>();
 
     // Default constructor required by JPA
     public TimeDepositEntity() {
@@ -101,6 +106,24 @@ public class TimeDepositEntity {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<WithdrawalEntity> getWithdrawals() {
+        return withdrawals;
+    }
+
+    public void setWithdrawals(List<WithdrawalEntity> withdrawals) {
+        this.withdrawals = withdrawals;
+    }
+
+    public void addWithdrawal(WithdrawalEntity withdrawal) {
+        withdrawals.add(withdrawal);
+        withdrawal.setTimeDeposit(this);
+    }
+
+    public void removeWithdrawal(WithdrawalEntity withdrawal) {
+        withdrawals.remove(withdrawal);
+        withdrawal.setTimeDeposit(null);
     }
 }
 
