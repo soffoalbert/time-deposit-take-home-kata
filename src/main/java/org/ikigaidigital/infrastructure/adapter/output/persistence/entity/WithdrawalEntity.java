@@ -1,4 +1,4 @@
-package org.ikigaidigital.domain.model;
+package org.ikigaidigital.infrastructure.adapter.output.persistence.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;

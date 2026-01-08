@@ -1,6 +1,6 @@
 package org.ikigaidigital.domain.port.output;
 
-import org.ikigaidigital.domain.model.WithdrawalEntity;
+import org.ikigaidigital.infrastructure.adapter.output.persistence.entity.WithdrawalEntity;
 
 import java.util.List;
 import java.util.Optional;

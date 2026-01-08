@@ -1,7 +1,5 @@
 package org.ikigaidigital;
 
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -9,8 +7,10 @@ import java.util.List;
 /**
  * Calculator for updating time deposit balances with interest.
  * Contains the core business logic for interest calculation.
+ *
+ * This is a pure domain class with no framework dependencies.
+ * Spring configuration is done via @Bean in infrastructure layer.
  */
-@Component
 public class TimeDepositCalculator {
     public void updateBalance(List<TimeDeposit> xs) {
         for (int i = 0; i < xs.size(); i++) {

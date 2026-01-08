@@ -1,6 +1,6 @@
 package org.ikigaidigital.infrastructure.adapter.output.persistence;
 
-import org.ikigaidigital.domain.model.WithdrawalEntity;
+import org.ikigaidigital.infrastructure.adapter.output.persistence.entity.WithdrawalEntity;
 import org.ikigaidigital.domain.port.output.WithdrawalRepositoryPort;
 import org.springframework.stereotype.Repository;
 

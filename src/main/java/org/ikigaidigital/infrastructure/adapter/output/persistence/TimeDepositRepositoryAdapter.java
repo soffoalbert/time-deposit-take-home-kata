@@ -1,6 +1,6 @@
 package org.ikigaidigital.infrastructure.adapter.output.persistence;
 
-import org.ikigaidigital.domain.model.TimeDepositEntity;
+import org.ikigaidigital.infrastructure.adapter.output.persistence.entity.TimeDepositEntity;
 import org.ikigaidigital.domain.port.output.TimeDepositRepositoryPort;
 import org.springframework.stereotype.Repository;
 
