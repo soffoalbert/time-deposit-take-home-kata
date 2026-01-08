@@ -1,7 +1,7 @@
 package org.ikigaidigital.domain.service;
 
 import org.ikigaidigital.TimeDeposit;
-import org.ikigaidigital.TimeDepositCalculator;
+import org.ikigaidigital.domain.model.TimeDepositCalculator;
 import org.ikigaidigital.infrastructure.adapter.output.persistence.entity.TimeDepositEntity;
 import org.ikigaidigital.domain.port.input.TimeDepositServicePort;
 import org.ikigaidigital.infrastructure.adapter.output.persistence.JpaTimeDepositRepository;

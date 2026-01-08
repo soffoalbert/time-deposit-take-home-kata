@@ -523,19 +523,25 @@ mvn clean compile
 
 ---
 
-### Commit 25: `feat(config): configure TimeDepositCalculator as Spring bean`
+### Commit 25: `refactor(domain): move TimeDepositCalculator to domain layer`
+
+**Files Moved:**
+- `src/main/java/org/ikigaidigital/TimeDepositCalculator.java` → `src/main/java/org/ikigaidigital/domain/model/TimeDepositCalculator.java`
 
 **Files Created:**
 - `src/main/java/org/ikigaidigital/infrastructure/config/DomainBeanConfig.java`
 
 **Changes:**
+- Move TimeDepositCalculator from root package to domain/model/ (proper Hexagonal Architecture)
 - Create configuration class with @Configuration annotation
 - Add @Bean method to create TimeDepositCalculator instance
 - Keep TimeDepositCalculator class free of framework annotations (pure domain)
 - **DO NOT** change the `updateBalance` method signature
 
-> **Note:** Domain classes should not have @Component annotation.
-> Spring configuration belongs in the infrastructure layer via @Bean.
+> **Note:** Domain classes should:
+> - Be located in `domain/model/` or `domain/service/` packages
+> - Have no framework annotations (@Component, @Service, etc.)
+> - Spring configuration belongs in the infrastructure layer via @Bean
 
 **Verification:**
 ```bash
@@ -962,7 +968,7 @@ These files must remain unchanged:
    - Do NOT change class signature
    - Do NOT add annotations
 
-2. **`src/main/java/org/ikigaidigital/TimeDepositCalculator.java`**
+2. **`src/main/java/org/ikigaidigital/domain/model/TimeDepositCalculator.java`** (moved from root package)
    - Do NOT change method signature of `updateBalance(List<TimeDeposit> xs)`
    - Do NOT modify the calculation logic
    - Do NOT add @Component annotation (domain class must be framework-agnostic)
@@ -971,7 +977,7 @@ These files must remain unchanged:
 ### Hexagonal Architecture Guidelines
 
 **Domain Layer (framework-agnostic):**
-- `domain/model/` - Pure domain models (POJOs only)
+- `domain/model/` - Pure domain models (POJOs only), including `TimeDeposit.java` and `TimeDepositCalculator.java`
 - `domain/port/input/` - Input port interfaces
 - `domain/port/output/` - Output port interfaces
 - `domain/service/` - Domain service implementations

@@ -1,6 +1,6 @@
 package org.ikigaidigital.infrastructure.config;
 
-import org.ikigaidigital.TimeDepositCalculator;
+import org.ikigaidigital.domain.model.TimeDepositCalculator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
