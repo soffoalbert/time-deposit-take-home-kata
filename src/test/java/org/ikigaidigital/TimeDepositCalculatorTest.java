@@ -1,7 +1,11 @@
 package org.ikigaidigital;
 
+import org.ikigaidigital.domain.model.InterestStrategyFactory;
 import org.ikigaidigital.domain.model.TimeDeposit;
 import org.ikigaidigital.domain.model.TimeDepositCalculator;
+import org.ikigaidigital.domain.model.strategy.BasicInterestStrategy;
+import org.ikigaidigital.domain.model.strategy.PremiumInterestStrategy;
+import org.ikigaidigital.domain.model.strategy.StudentInterestStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,6 +16,14 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
+/**
+ * Comprehensive unit tests for TimeDepositCalculator.
+ *
+ * Tests the updateBalance() method which:
+ * - Delegates interest calculation to the strategy factory
+ * - Rounds interest to 2 decimal places using HALF_UP rounding
+ * - Updates the balance of each deposit in the list
+ */
 @DisplayName("TimeDepositCalculator Tests")
 public class TimeDepositCalculatorTest {
 
@@ -143,6 +155,203 @@ public class TimeDepositCalculatorTest {
             assertThat(plans.get(0).getBalance()).isCloseTo(10008.33, within(0.01)); // basic
             assertThat(plans.get(1).getBalance()).isCloseTo(5012.50, within(0.01));  // student
             assertThat(plans.get(2).getBalance()).isCloseTo(50208.33, within(0.01)); // premium
+        }
+
+        @Test
+        @DisplayName("Handles empty list without error")
+        void handlesEmptyList() {
+            List<TimeDeposit> plans = new ArrayList<>();
+
+            calculator.updateBalance(plans);
+
+            assertThat(plans).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Mixed deposits with some in grace period")
+        void mixedDeposits_someInGracePeriod() {
+            List<TimeDeposit> plans = new ArrayList<>(List.of(
+                    new TimeDeposit(1, "basic", 10000.00, 30),    // grace period
+                    new TimeDeposit(2, "student", 5000.00, 31),   // just after grace
+                    new TimeDeposit(3, "premium", 50000.00, 45)   // at premium minimum
+            ));
+            calculator.updateBalance(plans);
+
+            assertThat(plans.get(0).getBalance()).isEqualTo(10000.00); // no change
+            assertThat(plans.get(1).getBalance()).isCloseTo(5012.50, within(0.01));
+            assertThat(plans.get(2).getBalance()).isEqualTo(50000.00); // no change
+        }
+    }
+
+    @Nested
+    @DisplayName("Rounding Behavior (HALF_UP to 2 decimal places)")
+    class RoundingBehavior {
+
+        @Test
+        @DisplayName("Rounds interest using HALF_UP - rounds up when fraction >= 0.5")
+        void roundsUp_whenFractionIsHalf() {
+            // Balance that produces interest ending in .5 cents
+            // 7200 * 0.01 / 12 = 6.00 exactly (no rounding needed)
+            // 7250 * 0.01 / 12 = 6.041666... → rounds to 6.04
+            List<TimeDeposit> plans = new ArrayList<>(List.of(
+                    new TimeDeposit(1, "basic", 7250.00, 45)
+            ));
+            calculator.updateBalance(plans);
+
+            assertThat(plans.get(0).getBalance()).isEqualTo(7256.04);
+        }
+
+        @Test
+        @DisplayName("Rounds interest using HALF_UP - rounds down when fraction < 0.5")
+        void roundsDown_whenFractionLessThanHalf() {
+            // 7100 * 0.01 / 12 = 5.9166... → rounds to 5.92
+            List<TimeDeposit> plans = new ArrayList<>(List.of(
+                    new TimeDeposit(1, "basic", 7100.00, 45)
+            ));
+            calculator.updateBalance(plans);
+
+            assertThat(plans.get(0).getBalance()).isEqualTo(7105.92);
+        }
+
+        @Test
+        @DisplayName("HALF_UP rounding at exact .5 boundary")
+        void halfUp_atExactBoundary() {
+            // Need a balance where interest is exactly X.XX5
+            // 6000 * 0.01 / 12 = 5.00 exactly
+            // 6600 * 0.01 / 12 = 5.50 exactly
+            List<TimeDeposit> plans = new ArrayList<>(List.of(
+                    new TimeDeposit(1, "basic", 6600.00, 45)
+            ));
+            calculator.updateBalance(plans);
+
+            assertThat(plans.get(0).getBalance()).isEqualTo(6605.50);
+        }
+
+        @Test
+        @DisplayName("Interest precision maintained across multiple calculations")
+        void precisionMaintained_acrossCalculations() {
+            // 12345.67 * 0.01 / 12 = 10.28805833... → rounds to 10.29
+            List<TimeDeposit> plans = new ArrayList<>(List.of(
+                    new TimeDeposit(1, "basic", 12345.67, 45)
+            ));
+            calculator.updateBalance(plans);
+
+            assertThat(plans.get(0).getBalance()).isCloseTo(12355.96, within(0.01));
+        }
+    }
+
+    @Nested
+    @DisplayName("Factory Integration")
+    class FactoryIntegration {
+
+        @Test
+        @DisplayName("Uses injected strategy factory when provided")
+        void usesInjectedFactory() {
+            InterestStrategyFactory customFactory = new InterestStrategyFactory(
+                    List.of(new BasicInterestStrategy())
+            );
+            TimeDepositCalculator customCalculator = new TimeDepositCalculator(customFactory);
+
+            List<TimeDeposit> plans = new ArrayList<>(List.of(
+                    new TimeDeposit(1, "basic", 10000.00, 45)
+            ));
+            customCalculator.updateBalance(plans);
+
+            assertThat(plans.get(0).getBalance()).isCloseTo(10008.33, within(0.01));
+        }
+
+        @Test
+        @DisplayName("Unknown plan type gets zero interest when factory has no matching strategy")
+        void unknownPlanType_getsZeroInterest() {
+            InterestStrategyFactory customFactory = new InterestStrategyFactory(
+                    List.of(new BasicInterestStrategy()) // only basic strategy
+            );
+            TimeDepositCalculator customCalculator = new TimeDepositCalculator(customFactory);
+
+            List<TimeDeposit> plans = new ArrayList<>(List.of(
+                    new TimeDeposit(1, "unknown", 10000.00, 45)
+            ));
+            customCalculator.updateBalance(plans);
+
+            assertThat(plans.get(0).getBalance()).isEqualTo(10000.00); // unchanged
+        }
+
+        @Test
+        @DisplayName("Default constructor creates calculator with all three strategies")
+        void defaultConstructor_hasAllStrategies() {
+            TimeDepositCalculator defaultCalculator = new TimeDepositCalculator();
+
+            List<TimeDeposit> plans = new ArrayList<>(List.of(
+                    new TimeDeposit(1, "basic", 10000.00, 45),
+                    new TimeDeposit(2, "student", 5000.00, 100),
+                    new TimeDeposit(3, "premium", 50000.00, 60)
+            ));
+            defaultCalculator.updateBalance(plans);
+
+            // All should have earned interest
+            assertThat(plans.get(0).getBalance()).isGreaterThan(10000.00);
+            assertThat(plans.get(1).getBalance()).isGreaterThan(5000.00);
+            assertThat(plans.get(2).getBalance()).isGreaterThan(50000.00);
+        }
+    }
+
+    @Nested
+    @DisplayName("Edge Cases")
+    class EdgeCases {
+
+        @Test
+        @DisplayName("Zero balance deposits remain at zero")
+        void zeroBalance_remainsZero() {
+            List<TimeDeposit> plans = new ArrayList<>(List.of(
+                    new TimeDeposit(1, "basic", 0.0, 45),
+                    new TimeDeposit(2, "student", 0.0, 100),
+                    new TimeDeposit(3, "premium", 0.0, 60)
+            ));
+            calculator.updateBalance(plans);
+
+            assertThat(plans.get(0).getBalance()).isEqualTo(0.0);
+            assertThat(plans.get(1).getBalance()).isEqualTo(0.0);
+            assertThat(plans.get(2).getBalance()).isEqualTo(0.0);
+        }
+
+        @Test
+        @DisplayName("Very large balance calculation")
+        void veryLargeBalance() {
+            // 100000000 * 0.05 / 12 = 416666.666...
+            List<TimeDeposit> plans = new ArrayList<>(List.of(
+                    new TimeDeposit(1, "premium", 100000000.00, 60)
+            ));
+            calculator.updateBalance(plans);
+
+            assertThat(plans.get(0).getBalance()).isCloseTo(100416666.67, within(0.01));
+        }
+
+        @Test
+        @DisplayName("Very small balance with minimal interest")
+        void verySmallBalance() {
+            // 1.00 * 0.01 / 12 = 0.000833... → rounds to 0.00
+            List<TimeDeposit> plans = new ArrayList<>(List.of(
+                    new TimeDeposit(1, "basic", 1.00, 45)
+            ));
+            calculator.updateBalance(plans);
+
+            assertThat(plans.get(0).getBalance()).isEqualTo(1.00); // interest rounds to 0
+        }
+
+        @Test
+        @DisplayName("Cumulative updates apply interest repeatedly")
+        void cumulativeUpdates() {
+            List<TimeDeposit> plans = new ArrayList<>(List.of(
+                    new TimeDeposit(1, "basic", 10000.00, 45)
+            ));
+
+            // First update: 10000 * 0.01 / 12 = 8.33 → balance = 10008.33
+            calculator.updateBalance(plans);
+            assertThat(plans.get(0).getBalance()).isCloseTo(10008.33, within(0.01));
+
+            // Second update: 10008.33 * 0.01 / 12 = 8.34 → balance = 10016.67
+            calculator.updateBalance(plans);
+            assertThat(plans.get(0).getBalance()).isCloseTo(10016.67, within(0.01));
         }
     }
 }
