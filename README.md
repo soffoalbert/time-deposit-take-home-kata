@@ -428,10 +428,10 @@ This project is part of a take-home coding kata assignment.
 ## Quick Start Summary
 
 ```bash
-# 1. Start database
+# 1. Run application with Docker
 docker-compose up -d
 
-# 2. Run application
+# 2. Run application directly
 ./mvnw spring-boot:run
 
 # 3. Open Swagger UI
