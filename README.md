@@ -361,6 +361,64 @@ This project follows **Hexagonal Architecture** (Ports & Adapters):
 └─────────────────────────────────────────────────────────────┘
 ```
 
+## Security Considerations
+
+This section documents security measures implemented and considerations for production deployment.
+
+### Implemented Security Measures
+
+| Measure | Description |
+|---------|-------------|
+| **Stack Trace Suppression** | Server configured to never expose stack traces in API responses |
+| **Global Exception Handler** | All exceptions return sanitized error messages, full details logged server-side |
+| **Actuator Endpoint Lockdown** | Only `/actuator/health` and `/actuator/info` exposed publicly |
+| **API Versioning** | Endpoints versioned (`/api/v1/`) for future backward compatibility |
+| **Parameterized Queries** | JPA/Hibernate prevents SQL injection by default |
+| **Input Validation Ready** | `spring-boot-starter-validation` dependency included for Bean Validation |
+
+### Production Deployment Recommendations
+
+For a production fintech/banking deployment, the following additional measures should be implemented:
+
+#### Authentication & Authorization
+- **OAuth2/JWT Authentication**: Secure API endpoints with token-based authentication
+- **Role-Based Access Control (RBAC)**: Implement roles for different access levels
+- **API Key Management**: For service-to-service communication
+
+#### Network Security
+- **HTTPS Enforcement**: TLS 1.3 for all communications
+- **CORS Configuration**: Restrict allowed origins to known clients
+- **Rate Limiting**: Prevent DoS attacks and API abuse (e.g., Bucket4j)
+- **WAF Integration**: Web Application Firewall for additional protection
+
+#### Data Security
+- **Encryption at Rest**: Encrypt sensitive financial data in database
+- **Encryption in Transit**: Already covered by HTTPS
+- **Data Masking**: Mask account numbers and balances in logs
+- **Audit Logging**: Log all financial transactions with user context
+
+#### Infrastructure Security
+- **Secrets Management**: Use HashiCorp Vault or AWS Secrets Manager for credentials
+- **Container Security**: Run as non-root user (already configured in Dockerfile)
+- **Dependency Scanning**: OWASP Dependency-Check in CI/CD pipeline
+- **Static Analysis**: SpotBugs with FindSecBugs for security bug detection
+
+#### Compliance Considerations
+- **PCI DSS**: If handling card data
+- **GDPR**: For EU customer data
+- **SOC 2**: For financial services
+- **Audit Trail**: Immutable logging of all data changes
+
+### Security Anti-Patterns Avoided
+
+| Anti-Pattern | How Avoided |
+|--------------|-------------|
+| Stack trace exposure | Global exception handler + server config |
+| SQL injection | JPA parameterized queries |
+| Sensitive data in logs | Appropriate log levels configured |
+| Overly permissive actuator | Restricted to health/info only |
+| Hardcoded secrets | Environment variables for credentials |
+
 ## License
 
 This project is part of a take-home coding kata assignment.

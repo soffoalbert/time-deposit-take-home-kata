@@ -25,16 +25,30 @@ spring:
 # Server settings
 server:
   port: 8080
+  # Security: Hide server error details in responses
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-exception: false
+    include-binding-errors: never
 
 # Actuator settings
+# Security: Only expose minimal endpoints required for health checks
+# In production, consider securing these behind authentication
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        # Only expose health and info - no metrics, env, beans, etc.
+        include: health,info
+      base-path: /actuator
   endpoint:
     health:
+      # Only show full details to authorized users
       show-details: when_authorized
+      show-components: when_authorized
+    info:
+      enabled: true
 
 # OpenAPI/Swagger settings
 springdoc:
