@@ -32,8 +32,8 @@ public class OpenApiConfig {
                                 .email("dev@xabank.com")
                                 .url("https://xabank.com"))
                         .license(new License()
-                                .name("Apache 2.0")
-                                .url("https://www.apache.org/licenses/LICENSE-2.0")))
+                                .name("XBank Proprietary License")
+                                .url("https://xbank.com/license")))
                 .servers(List.of(
                         new Server()
                                 .url("http://localhost:" + serverPort)
