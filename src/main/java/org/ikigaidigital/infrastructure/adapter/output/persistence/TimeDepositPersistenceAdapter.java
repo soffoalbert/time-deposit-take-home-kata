@@ -6,6 +6,7 @@ import org.ikigaidigital.infrastructure.adapter.output.persistence.entity.TimeDe
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,19 +43,32 @@ public class TimeDepositPersistenceAdapter implements TimeDepositPersistencePort
     public List<TimeDeposit> saveAll(List<TimeDeposit> timeDeposits) {
         // First, fetch existing entities to update them
         List<TimeDepositEntity> existingEntities = jpaRepository.findAll();
-        
-        // Update entities with new balances from domain objects
+
+        // Track entities that actually need updating
+        List<TimeDepositEntity> entitiesToUpdate = new ArrayList<>();
+
+        // Update entities with new balances from domain objects, only if balance changed
         for (TimeDeposit domain : timeDeposits) {
             existingEntities.stream()
                     .filter(e -> e.getId().equals(domain.getId()))
                     .findFirst()
-                    .ifPresent(entity -> entity.setBalance(BigDecimal.valueOf(domain.getBalance())));
+                    .ifPresent(entity -> {
+                        BigDecimal newBalance = BigDecimal.valueOf(domain.getBalance());
+                        // Only update if balance actually changed
+                        if (entity.getBalance().compareTo(newBalance) != 0) {
+                            entity.setBalance(newBalance);
+                            entitiesToUpdate.add(entity);
+                        }
+                    });
         }
-        
-        // Save and return as domain objects
-        return jpaRepository.saveAll(existingEntities).stream()
-                .map(this::toDomain)
-                .collect(Collectors.toList());
+
+        // Save only entities that changed
+        if (!entitiesToUpdate.isEmpty()) {
+            jpaRepository.saveAll(entitiesToUpdate);
+        }
+
+        // Return all domain objects (including unchanged ones)
+        return timeDeposits;
     }
 
     /**
