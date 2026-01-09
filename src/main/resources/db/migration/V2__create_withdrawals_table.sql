@@ -10,7 +10,7 @@ CREATE TABLE withdrawals (
     CONSTRAINT fk_time_deposit
         FOREIGN KEY (time_deposit_id)
         REFERENCES time_deposits(id)
-        ON DELETE CASCADE
+        ON DELETE RESTRICT
 );
 
 -- Index for querying withdrawals by time deposit
