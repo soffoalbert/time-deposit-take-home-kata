@@ -12,18 +12,23 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 /**
- * Spring configuration for domain layer beans.
+ * Composition Root - the single place where the dependency graph is assembled.
  *
- * This keeps the domain layer clean of framework annotations
- * while allowing Spring dependency injection.
+ * This configuration class wires domain objects as Spring beans while keeping
+ * the domain layer completely framework-agnostic (no Spring annotations in domain classes).
  *
- * Beans are wired following Hexagonal Architecture principles:
- * - Strategy implementations are created as beans
- * - Factory aggregates all strategies
- * - Calculator uses the factory for interest calculations
+ * This follows Hexagonal Architecture and Clean Architecture principles:
+ * - Domain classes remain pure Java with no framework dependencies
+ * - Infrastructure layer is responsible for dependency injection wiring
+ * - Domain objects can be unit tested without Spring context
+ *
+ * Beans configured:
+ * - Interest calculation strategies (Basic, Student, Premium)
+ * - InterestStrategyFactory (aggregates strategies)
+ * - TimeDepositCalculator (uses factory for calculations)
  */
 @Configuration
-public class DomainBeanConfig {
+public class CompositionRootConfig {
 
     /**
      * Create the BasicInterestStrategy bean.
