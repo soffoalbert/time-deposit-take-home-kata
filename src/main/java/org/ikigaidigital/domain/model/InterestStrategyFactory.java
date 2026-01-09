@@ -1,6 +1,6 @@
 package org.ikigaidigital.domain.model;
 
-import org.ikigaidigital.domain.port.output.InterestCalculationStrategy;
+import org.ikigaidigital.domain.model.strategy.InterestCalculationStrategy;
 
 import java.util.List;
 import java.util.Optional;

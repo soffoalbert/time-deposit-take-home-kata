@@ -1,7 +1,7 @@
 package org.ikigaidigital.domain.model.strategy;
 
 import org.ikigaidigital.domain.model.TimeDeposit;
-import org.ikigaidigital.domain.port.output.InterestCalculationStrategy;
+
 
 /**
  * Interest calculation strategy for Student plan deposits.

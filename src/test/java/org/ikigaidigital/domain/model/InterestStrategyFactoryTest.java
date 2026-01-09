@@ -3,7 +3,7 @@ package org.ikigaidigital.domain.model;
 import org.ikigaidigital.domain.model.strategy.BasicInterestStrategy;
 import org.ikigaidigital.domain.model.strategy.PremiumInterestStrategy;
 import org.ikigaidigital.domain.model.strategy.StudentInterestStrategy;
-import org.ikigaidigital.domain.port.output.InterestCalculationStrategy;
+import org.ikigaidigital.domain.model.strategy.InterestCalculationStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

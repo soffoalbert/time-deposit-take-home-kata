@@ -5,7 +5,7 @@ import org.ikigaidigital.domain.model.TimeDepositCalculator;
 import org.ikigaidigital.domain.model.strategy.BasicInterestStrategy;
 import org.ikigaidigital.domain.model.strategy.PremiumInterestStrategy;
 import org.ikigaidigital.domain.model.strategy.StudentInterestStrategy;
-import org.ikigaidigital.domain.port.output.InterestCalculationStrategy;
+import org.ikigaidigital.domain.model.strategy.InterestCalculationStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
