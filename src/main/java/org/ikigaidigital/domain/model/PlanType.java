@@ -15,6 +15,7 @@ import org.ikigaidigital.infrastructure.adapter.input.rest.serialization.PlanTyp
  * - BASIC: 1% annual interest rate, 30-day grace period
  * - STUDENT: 3% annual interest rate, 30-day grace period, 366-day cutoff
  * - PREMIUM: 5% annual interest rate, 45-day minimum
+ * - INTERNAL: 8.5% annual interest rate, no grace period, terminates at 300 days
  *
  * JSON serialization is handled by custom serializer/deserializer to ensure
  * lowercase string values are used in API responses and requests.
@@ -24,7 +25,8 @@ import org.ikigaidigital.infrastructure.adapter.input.rest.serialization.PlanTyp
 public enum PlanType {
     BASIC("basic"),
     STUDENT("student"),
-    PREMIUM("premium");
+    PREMIUM("premium"),
+    INTERNAL("internal");
 
     private final String value;
 

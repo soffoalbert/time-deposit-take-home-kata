@@ -122,7 +122,7 @@ class InterestStrategyFactoryTest {
         @Test
         @DisplayName("delegates to InternalInterestStrategy for internal plan")
         void delegatesToInternalStrategy() {
-            TimeDeposit deposit = new TimeDeposit(1, "internal", 10000.00, 100);
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.INTERNAL, 10000.00, 100);
 
             double interest = factory.calculateInterest(deposit);
 
