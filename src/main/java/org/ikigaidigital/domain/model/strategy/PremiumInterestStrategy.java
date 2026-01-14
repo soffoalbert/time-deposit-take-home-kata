@@ -1,20 +1,21 @@
 package org.ikigaidigital.domain.model.strategy;
 
+import org.ikigaidigital.domain.model.PlanType;
 import org.ikigaidigital.domain.model.TimeDeposit;
 
 
 /**
  * Interest calculation strategy for Premium plan deposits.
- * 
+ *
  * Business Rules:
  * - 5% annual interest rate
  * - Interest accrues only after 45 days (not 30-day grace period)
- * 
+ *
  * This is a pure domain class with no framework dependencies.
  */
 public class PremiumInterestStrategy implements InterestCalculationStrategy {
 
-    private static final String PLAN_TYPE = "premium";
+    private static final PlanType PLAN_TYPE = PlanType.PREMIUM;
     private static final int GRACE_PERIOD_DAYS = 30;
     private static final int PREMIUM_MINIMUM_DAYS = 45;
     private static final double ANNUAL_INTEREST_RATE = 0.05;
@@ -33,8 +34,8 @@ public class PremiumInterestStrategy implements InterestCalculationStrategy {
     }
 
     @Override
-    public boolean supports(String planType) {
-        return PLAN_TYPE.equals(planType);
+    public boolean supports(PlanType planType) {
+        return PLAN_TYPE == planType;
     }
 }
 

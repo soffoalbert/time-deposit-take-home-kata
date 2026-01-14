@@ -50,7 +50,7 @@ class TimeDepositApiIntegrationTest extends AbstractIntegrationTest {
 
         // Verify deposit types from seed data
         List<String> planTypes = response.getBody().stream()
-                .map(TimeDepositResponseDTO::planType)
+                .map(dto -> dto.planType().getValue())
                 .toList();
         assertThat(planTypes).containsExactlyInAnyOrder("basic", "student", "premium");
     }
@@ -70,9 +70,9 @@ class TimeDepositApiIntegrationTest extends AbstractIntegrationTest {
         // Then
         assertThat(response.getBody()).isNotNull();
         TimeDepositResponseDTO deposit = response.getBody().get(0);
-        
+
         assertThat(deposit.id()).isNotNull();
-        assertThat(deposit.planType()).isNotBlank();
+        assertThat(deposit.planType()).isNotNull();
         assertThat(deposit.balance()).isNotNull();
         assertThat(deposit.days()).isNotNull();
         assertThat(deposit.withdrawals()).isNotNull();
@@ -112,7 +112,7 @@ class TimeDepositApiIntegrationTest extends AbstractIntegrationTest {
 
         // Store initial balances
         BigDecimal basicBalanceBefore = beforeResponse.getBody().stream()
-                .filter(d -> "basic".equals(d.planType()))
+                .filter(d -> "basic".equals(d.planType().getValue()))
                 .findFirst()
                 .map(TimeDepositResponseDTO::balance)
                 .orElseThrow();
@@ -134,7 +134,7 @@ class TimeDepositApiIntegrationTest extends AbstractIntegrationTest {
         assertThat(afterResponse.getBody()).isNotNull();
 
         BigDecimal basicBalanceAfter = afterResponse.getBody().stream()
-                .filter(d -> "basic".equals(d.planType()))
+                .filter(d -> "basic".equals(d.planType().getValue()))
                 .findFirst()
                 .map(TimeDepositResponseDTO::balance)
                 .orElseThrow();

@@ -1,5 +1,6 @@
 package org.ikigaidigital.infrastructure.adapter.output.persistence;
 
+import org.ikigaidigital.domain.model.PlanType;
 import org.ikigaidigital.infrastructure.adapter.output.persistence.entity.TimeDepositEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,6 +30,6 @@ public interface JpaTimeDepositRepository extends JpaRepository<TimeDepositEntit
      * @param planType the plan type to filter by
      * @return list of time deposits matching the plan type
      */
-    List<TimeDepositEntity> findByPlanType(String planType);
+    List<TimeDepositEntity> findByPlanType(PlanType planType);
 }
 

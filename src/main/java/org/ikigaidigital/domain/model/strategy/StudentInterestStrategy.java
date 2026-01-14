@@ -1,21 +1,22 @@
 package org.ikigaidigital.domain.model.strategy;
 
+import org.ikigaidigital.domain.model.PlanType;
 import org.ikigaidigital.domain.model.TimeDeposit;
 
 
 /**
  * Interest calculation strategy for Student plan deposits.
- * 
+ *
  * Business Rules:
  * - 3% annual interest rate
  * - Interest accrues only after 30-day grace period
  * - Interest only applies for deposits less than 366 days old
- * 
+ *
  * This is a pure domain class with no framework dependencies.
  */
 public class StudentInterestStrategy implements InterestCalculationStrategy {
 
-    private static final String PLAN_TYPE = "student";
+    private static final PlanType PLAN_TYPE = PlanType.STUDENT;
     private static final int GRACE_PERIOD_DAYS = 30;
     private static final int MAX_DAYS_FOR_INTEREST = 366;
     private static final double ANNUAL_INTEREST_RATE = 0.03;
@@ -33,8 +34,8 @@ public class StudentInterestStrategy implements InterestCalculationStrategy {
     }
 
     @Override
-    public boolean supports(String planType) {
-        return PLAN_TYPE.equals(planType);
+    public boolean supports(PlanType planType) {
+        return PLAN_TYPE == planType;
     }
 }
 

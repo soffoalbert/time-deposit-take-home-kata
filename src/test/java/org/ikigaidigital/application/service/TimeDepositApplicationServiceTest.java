@@ -2,6 +2,7 @@ package org.ikigaidigital.application.service;
 
 import org.ikigaidigital.application.port.input.UpdateAllBalancesUseCase;
 import org.ikigaidigital.application.port.output.TimeDepositPersistencePort;
+import org.ikigaidigital.domain.model.PlanType;
 import org.ikigaidigital.domain.model.TimeDeposit;
 import org.ikigaidigital.domain.model.TimeDepositCalculator;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +46,7 @@ class TimeDepositApplicationServiceTest {
         @DisplayName("returns deposits from persistence port")
         void returnsDepositsFromPersistencePort() {
             // Given
-            TimeDeposit deposit = new TimeDeposit(1, "basic", 10000.00, 45);
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.BASIC, 10000.00, 45);
             when(persistencePort.findAllWithWithdrawals()).thenReturn(List.of(deposit));
 
             // When
@@ -54,7 +55,7 @@ class TimeDepositApplicationServiceTest {
             // Then
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getId()).isEqualTo(1);
-            assertThat(result.get(0).getPlanType()).isEqualTo("basic");
+            assertThat(result.get(0).getPlanType()).isEqualTo(PlanType.BASIC);
             verify(persistencePort).findAllWithWithdrawals();
         }
 
@@ -81,7 +82,7 @@ class TimeDepositApplicationServiceTest {
         @DisplayName("calls calculator and saves deposits")
         void callsCalculatorAndSavesDeposits() {
             // Given
-            TimeDeposit deposit = new TimeDeposit(1, "basic", 10000.00, 45);
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.BASIC, 10000.00, 45);
             List<TimeDeposit> deposits = new ArrayList<>(List.of(deposit));
             when(persistencePort.findAll()).thenReturn(deposits);
             when(persistencePort.saveAll(deposits)).thenReturn(deposits);
@@ -116,9 +117,9 @@ class TimeDepositApplicationServiceTest {
         void processesMultipleDeposits() {
             // Given
             List<TimeDeposit> deposits = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "basic", 10000.00, 45),
-                    new TimeDeposit(2, "student", 5000.00, 100),
-                    new TimeDeposit(3, "premium", 50000.00, 60)
+                    new TimeDeposit(1, PlanType.BASIC, 10000.00, 45),
+                    new TimeDeposit(2, PlanType.STUDENT, 5000.00, 100),
+                    new TimeDeposit(3, PlanType.PREMIUM, 50000.00, 60)
             ));
             when(persistencePort.findAll()).thenReturn(deposits);
             when(persistencePort.saveAll(deposits)).thenReturn(deposits);

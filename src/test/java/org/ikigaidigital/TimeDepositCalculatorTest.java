@@ -1,6 +1,7 @@
 package org.ikigaidigital;
 
 import org.ikigaidigital.domain.model.InterestStrategyFactory;
+import org.ikigaidigital.domain.model.PlanType;
 import org.ikigaidigital.domain.model.TimeDeposit;
 import org.ikigaidigital.domain.model.TimeDepositCalculator;
 import org.ikigaidigital.domain.model.strategy.BasicInterestStrategy;
@@ -41,7 +42,7 @@ public class TimeDepositCalculatorTest {
         @Test
         @DisplayName("Basic plan - no interest at 30 days")
         void basicPlan_noInterest_at30Days() {
-            List<TimeDeposit> plans = List.of(new TimeDeposit(1, "basic", 10000.00, 30));
+            List<TimeDeposit> plans = List.of(new TimeDeposit(1, PlanType.BASIC, 10000.00, 30));
             calculator.updateBalance(plans);
             assertThat(plans.get(0).getBalance()).isEqualTo(10000.00);
         }
@@ -49,7 +50,7 @@ public class TimeDepositCalculatorTest {
         @Test
         @DisplayName("Student plan - no interest at 30 days")
         void studentPlan_noInterest_at30Days() {
-            List<TimeDeposit> plans = List.of(new TimeDeposit(1, "student", 5000.00, 30));
+            List<TimeDeposit> plans = List.of(new TimeDeposit(1, PlanType.STUDENT, 5000.00, 30));
             calculator.updateBalance(plans);
             assertThat(plans.get(0).getBalance()).isEqualTo(5000.00);
         }
@@ -57,7 +58,7 @@ public class TimeDepositCalculatorTest {
         @Test
         @DisplayName("Premium plan - no interest at 30 days")
         void premiumPlan_noInterest_at30Days() {
-            List<TimeDeposit> plans = List.of(new TimeDeposit(1, "premium", 50000.00, 30));
+            List<TimeDeposit> plans = List.of(new TimeDeposit(1, PlanType.PREMIUM, 50000.00, 30));
             calculator.updateBalance(plans);
             assertThat(plans.get(0).getBalance()).isEqualTo(50000.00);
         }
@@ -71,7 +72,7 @@ public class TimeDepositCalculatorTest {
         @DisplayName("Basic plan earns 1% annual interest after 30 days")
         void basicPlan_earnsInterest_after30Days() {
             // 10000 * 0.01 / 12 = 8.33
-            List<TimeDeposit> plans = List.of(new TimeDeposit(1, "basic", 10000.00, 45));
+            List<TimeDeposit> plans = List.of(new TimeDeposit(1, PlanType.BASIC, 10000.00, 45));
             calculator.updateBalance(plans);
             assertThat(plans.get(0).getBalance()).isCloseTo(10008.33, within(0.01));
         }
@@ -80,7 +81,7 @@ public class TimeDepositCalculatorTest {
         @DisplayName("Original test - basic plan large balance")
         void basicPlan_largeBalance() {
             // 1234567 * 0.01 / 12 = 1028.81
-            List<TimeDeposit> plans = List.of(new TimeDeposit(1, "basic", 1234567.00, 45));
+            List<TimeDeposit> plans = List.of(new TimeDeposit(1, PlanType.BASIC, 1234567.00, 45));
             calculator.updateBalance(plans);
             assertThat(plans.get(0).getBalance()).isCloseTo(1235595.81, within(0.01));
         }
@@ -94,7 +95,7 @@ public class TimeDepositCalculatorTest {
         @DisplayName("Student plan earns 3% annual interest after 30 days")
         void studentPlan_earnsInterest_after30Days() {
             // 5000 * 0.03 / 12 = 12.50
-            List<TimeDeposit> plans = List.of(new TimeDeposit(1, "student", 5000.00, 100));
+            List<TimeDeposit> plans = List.of(new TimeDeposit(1, PlanType.STUDENT, 5000.00, 100));
             calculator.updateBalance(plans);
             assertThat(plans.get(0).getBalance()).isCloseTo(5012.50, within(0.01));
         }
@@ -102,7 +103,7 @@ public class TimeDepositCalculatorTest {
         @Test
         @DisplayName("Student plan earns interest at 365 days")
         void studentPlan_earnsInterest_at365Days() {
-            List<TimeDeposit> plans = List.of(new TimeDeposit(1, "student", 5000.00, 365));
+            List<TimeDeposit> plans = List.of(new TimeDeposit(1, PlanType.STUDENT, 5000.00, 365));
             calculator.updateBalance(plans);
             assertThat(plans.get(0).getBalance()).isCloseTo(5012.50, within(0.01));
         }
@@ -110,7 +111,7 @@ public class TimeDepositCalculatorTest {
         @Test
         @DisplayName("Student plan no interest at 366+ days")
         void studentPlan_noInterest_at366Days() {
-            List<TimeDeposit> plans = List.of(new TimeDeposit(1, "student", 5000.00, 366));
+            List<TimeDeposit> plans = List.of(new TimeDeposit(1, PlanType.STUDENT, 5000.00, 366));
             calculator.updateBalance(plans);
             assertThat(plans.get(0).getBalance()).isEqualTo(5000.00);
         }
@@ -123,7 +124,7 @@ public class TimeDepositCalculatorTest {
         @Test
         @DisplayName("Premium plan no interest at 45 days")
         void premiumPlan_noInterest_at45Days() {
-            List<TimeDeposit> plans = List.of(new TimeDeposit(1, "premium", 50000.00, 45));
+            List<TimeDeposit> plans = List.of(new TimeDeposit(1, PlanType.PREMIUM, 50000.00, 45));
             calculator.updateBalance(plans);
             assertThat(plans.get(0).getBalance()).isEqualTo(50000.00);
         }
@@ -132,7 +133,7 @@ public class TimeDepositCalculatorTest {
         @DisplayName("Premium plan earns 5% annual interest after 45 days")
         void premiumPlan_earnsInterest_after45Days() {
             // 50000 * 0.05 / 12 = 208.33
-            List<TimeDeposit> plans = List.of(new TimeDeposit(1, "premium", 50000.00, 60));
+            List<TimeDeposit> plans = List.of(new TimeDeposit(1, PlanType.PREMIUM, 50000.00, 60));
             calculator.updateBalance(plans);
             assertThat(plans.get(0).getBalance()).isCloseTo(50208.33, within(0.01));
         }
@@ -146,9 +147,9 @@ public class TimeDepositCalculatorTest {
         @DisplayName("Updates all deposits in list")
         void updatesAllDeposits() {
             List<TimeDeposit> plans = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "basic", 10000.00, 45),
-                    new TimeDeposit(2, "student", 5000.00, 100),
-                    new TimeDeposit(3, "premium", 50000.00, 60)
+                    new TimeDeposit(1, PlanType.BASIC, 10000.00, 45),
+                    new TimeDeposit(2, PlanType.STUDENT, 5000.00, 100),
+                    new TimeDeposit(3, PlanType.PREMIUM, 50000.00, 60)
             ));
             calculator.updateBalance(plans);
 
@@ -171,9 +172,9 @@ public class TimeDepositCalculatorTest {
         @DisplayName("Mixed deposits with some in grace period")
         void mixedDeposits_someInGracePeriod() {
             List<TimeDeposit> plans = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "basic", 10000.00, 30),    // grace period
-                    new TimeDeposit(2, "student", 5000.00, 31),   // just after grace
-                    new TimeDeposit(3, "premium", 50000.00, 45)   // at premium minimum
+                    new TimeDeposit(1, PlanType.BASIC, 10000.00, 30),    // grace period
+                    new TimeDeposit(2, PlanType.STUDENT, 5000.00, 31),   // just after grace
+                    new TimeDeposit(3, PlanType.PREMIUM, 50000.00, 45)   // at premium minimum
             ));
             calculator.updateBalance(plans);
 
@@ -194,7 +195,7 @@ public class TimeDepositCalculatorTest {
             // 7200 * 0.01 / 12 = 6.00 exactly (no rounding needed)
             // 7250 * 0.01 / 12 = 6.041666... → rounds to 6.04
             List<TimeDeposit> plans = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "basic", 7250.00, 45)
+                    new TimeDeposit(1, PlanType.BASIC, 7250.00, 45)
             ));
             calculator.updateBalance(plans);
 
@@ -206,7 +207,7 @@ public class TimeDepositCalculatorTest {
         void roundsDown_whenFractionLessThanHalf() {
             // 7100 * 0.01 / 12 = 5.9166... → rounds to 5.92
             List<TimeDeposit> plans = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "basic", 7100.00, 45)
+                    new TimeDeposit(1, PlanType.BASIC, 7100.00, 45)
             ));
             calculator.updateBalance(plans);
 
@@ -220,7 +221,7 @@ public class TimeDepositCalculatorTest {
             // 6000 * 0.01 / 12 = 5.00 exactly
             // 6600 * 0.01 / 12 = 5.50 exactly
             List<TimeDeposit> plans = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "basic", 6600.00, 45)
+                    new TimeDeposit(1, PlanType.BASIC, 6600.00, 45)
             ));
             calculator.updateBalance(plans);
 
@@ -232,7 +233,7 @@ public class TimeDepositCalculatorTest {
         void precisionMaintained_acrossCalculations() {
             // 12345.67 * 0.01 / 12 = 10.28805833... → rounds to 10.29
             List<TimeDeposit> plans = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "basic", 12345.67, 45)
+                    new TimeDeposit(1, PlanType.BASIC, 12345.67, 45)
             ));
             calculator.updateBalance(plans);
 
@@ -253,28 +254,14 @@ public class TimeDepositCalculatorTest {
             TimeDepositCalculator customCalculator = new TimeDepositCalculator(customFactory);
 
             List<TimeDeposit> plans = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "basic", 10000.00, 45)
+                    new TimeDeposit(1, PlanType.BASIC, 10000.00, 45)
             ));
             customCalculator.updateBalance(plans);
 
             assertThat(plans.get(0).getBalance()).isCloseTo(10008.33, within(0.01));
         }
 
-        @Test
-        @DisplayName("Unknown plan type gets zero interest when factory has no matching strategy")
-        void unknownPlanType_getsZeroInterest() {
-            InterestStrategyFactory customFactory = new InterestStrategyFactory(
-                    List.of(new BasicInterestStrategy()) // only basic strategy
-            );
-            TimeDepositCalculator customCalculator = new TimeDepositCalculator(customFactory);
 
-            List<TimeDeposit> plans = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "unknown", 10000.00, 45)
-            ));
-            customCalculator.updateBalance(plans);
-
-            assertThat(plans.get(0).getBalance()).isEqualTo(10000.00); // unchanged
-        }
 
         @Test
         @DisplayName("Default constructor creates calculator with all three strategies")
@@ -282,9 +269,9 @@ public class TimeDepositCalculatorTest {
             TimeDepositCalculator defaultCalculator = new TimeDepositCalculator();
 
             List<TimeDeposit> plans = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "basic", 10000.00, 45),
-                    new TimeDeposit(2, "student", 5000.00, 100),
-                    new TimeDeposit(3, "premium", 50000.00, 60)
+                    new TimeDeposit(1, PlanType.BASIC, 10000.00, 45),
+                    new TimeDeposit(2, PlanType.STUDENT, 5000.00, 100),
+                    new TimeDeposit(3, PlanType.PREMIUM, 50000.00, 60)
             ));
             defaultCalculator.updateBalance(plans);
 
@@ -303,9 +290,9 @@ public class TimeDepositCalculatorTest {
         @DisplayName("Zero balance deposits remain at zero")
         void zeroBalance_remainsZero() {
             List<TimeDeposit> plans = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "basic", 0.0, 45),
-                    new TimeDeposit(2, "student", 0.0, 100),
-                    new TimeDeposit(3, "premium", 0.0, 60)
+                    new TimeDeposit(1, PlanType.BASIC, 0.0, 45),
+                    new TimeDeposit(2, PlanType.STUDENT, 0.0, 100),
+                    new TimeDeposit(3, PlanType.PREMIUM, 0.0, 60)
             ));
             calculator.updateBalance(plans);
 
@@ -319,7 +306,7 @@ public class TimeDepositCalculatorTest {
         void veryLargeBalance() {
             // 100000000 * 0.05 / 12 = 416666.666...
             List<TimeDeposit> plans = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "premium", 100000000.00, 60)
+                    new TimeDeposit(1, PlanType.PREMIUM, 100000000.00, 60)
             ));
             calculator.updateBalance(plans);
 
@@ -331,7 +318,7 @@ public class TimeDepositCalculatorTest {
         void verySmallBalance() {
             // 1.00 * 0.01 / 12 = 0.000833... → rounds to 0.00
             List<TimeDeposit> plans = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "basic", 1.00, 45)
+                    new TimeDeposit(1, PlanType.BASIC, 1.00, 45)
             ));
             calculator.updateBalance(plans);
 
@@ -342,7 +329,7 @@ public class TimeDepositCalculatorTest {
         @DisplayName("Cumulative updates apply interest repeatedly")
         void cumulativeUpdates() {
             List<TimeDeposit> plans = new ArrayList<>(List.of(
-                    new TimeDeposit(1, "basic", 10000.00, 45)
+                    new TimeDeposit(1, PlanType.BASIC, 10000.00, 45)
             ));
 
             // First update: 10000 * 0.01 / 12 = 8.33 → balance = 10008.33

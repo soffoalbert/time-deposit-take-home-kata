@@ -1,5 +1,6 @@
 package org.ikigaidigital.domain.model.strategy;
 
+import org.ikigaidigital.domain.model.PlanType;
 import org.ikigaidigital.domain.model.TimeDeposit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,39 +35,27 @@ class PremiumInterestStrategyTest {
     class SupportsMethod {
 
         @Test
-        @DisplayName("returns true for 'premium' plan type")
+        @DisplayName("returns true for PREMIUM plan type")
         void returnsTrue_forPremiumPlanType() {
-            assertThat(strategy.supports("premium")).isTrue();
+            assertThat(strategy.supports(PlanType.PREMIUM)).isTrue();
         }
 
         @Test
-        @DisplayName("returns false for 'basic' plan type")
+        @DisplayName("returns false for BASIC plan type")
         void returnsFalse_forBasicPlanType() {
-            assertThat(strategy.supports("basic")).isFalse();
+            assertThat(strategy.supports(PlanType.BASIC)).isFalse();
         }
 
         @Test
-        @DisplayName("returns false for 'student' plan type")
+        @DisplayName("returns false for STUDENT plan type")
         void returnsFalse_forStudentPlanType() {
-            assertThat(strategy.supports("student")).isFalse();
+            assertThat(strategy.supports(PlanType.STUDENT)).isFalse();
         }
 
         @Test
         @DisplayName("returns false for null plan type")
         void returnsFalse_forNullPlanType() {
             assertThat(strategy.supports(null)).isFalse();
-        }
-
-        @Test
-        @DisplayName("returns false for empty string")
-        void returnsFalse_forEmptyString() {
-            assertThat(strategy.supports("")).isFalse();
-        }
-
-        @Test
-        @DisplayName("returns false for 'PREMIUM' (case sensitive)")
-        void returnsFalse_forUppercasePremium() {
-            assertThat(strategy.supports("PREMIUM")).isFalse();
         }
     }
 
@@ -78,10 +67,10 @@ class PremiumInterestStrategyTest {
         @ValueSource(ints = {0, 1, 10, 15, 29, 30})
         @DisplayName("returns 0 interest during grace period")
         void returnsZeroInterest_duringGracePeriod(int days) {
-            TimeDeposit deposit = new TimeDeposit(1, "premium", 50000.00, days);
-            
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.PREMIUM, 50000.00, days);
+
             double interest = strategy.calculateInterest(deposit);
-            
+
             assertThat(interest).isEqualTo(0.0);
         }
     }
@@ -94,30 +83,30 @@ class PremiumInterestStrategyTest {
         @ValueSource(ints = {31, 35, 40, 44, 45})
         @DisplayName("returns 0 interest between grace period and 45-day minimum")
         void returnsZeroInterest_beforePremiumMinimum(int days) {
-            TimeDeposit deposit = new TimeDeposit(1, "premium", 50000.00, days);
-            
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.PREMIUM, 50000.00, days);
+
             double interest = strategy.calculateInterest(deposit);
-            
+
             assertThat(interest).isEqualTo(0.0);
         }
 
         @Test
         @DisplayName("returns 0 interest at exactly 45 days")
         void returnsZeroInterest_atExactly45Days() {
-            TimeDeposit deposit = new TimeDeposit(1, "premium", 50000.00, 45);
-            
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.PREMIUM, 50000.00, 45);
+
             double interest = strategy.calculateInterest(deposit);
-            
+
             assertThat(interest).isEqualTo(0.0);
         }
 
         @Test
         @DisplayName("returns 0 at 44 days even with large balance")
         void returnsZeroInterest_at44Days_withLargeBalance() {
-            TimeDeposit deposit = new TimeDeposit(1, "premium", 1000000.00, 44);
-            
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.PREMIUM, 1000000.00, 44);
+
             double interest = strategy.calculateInterest(deposit);
-            
+
             assertThat(interest).isEqualTo(0.0);
         }
     }
@@ -130,10 +119,10 @@ class PremiumInterestStrategyTest {
         @DisplayName("earns interest at 46 days (just after 45-day minimum)")
         void earnsInterest_at46Days() {
             // 50000 * 0.05 / 12 = 208.333...
-            TimeDeposit deposit = new TimeDeposit(1, "premium", 50000.00, 46);
-            
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.PREMIUM, 50000.00, 46);
+
             double interest = strategy.calculateInterest(deposit);
-            
+
             assertThat(interest).isCloseTo(208.33, within(0.01));
         }
 
@@ -141,10 +130,10 @@ class PremiumInterestStrategyTest {
         @DisplayName("calculates correct monthly interest for standard balance")
         void calculatesCorrectInterest_forStandardBalance() {
             // 50000 * 0.05 / 12 = 208.333...
-            TimeDeposit deposit = new TimeDeposit(1, "premium", 50000.00, 60);
-            
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.PREMIUM, 50000.00, 60);
+
             double interest = strategy.calculateInterest(deposit);
-            
+
             assertThat(interest).isCloseTo(208.33, within(0.01));
         }
 
@@ -152,7 +141,7 @@ class PremiumInterestStrategyTest {
         @DisplayName("calculates correct interest for large balance")
         void calculatesCorrectInterest_forLargeBalance() {
             // 1000000 * 0.05 / 12 = 4166.666...
-            TimeDeposit deposit = new TimeDeposit(1, "premium", 1000000.00, 100);
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.PREMIUM, 1000000.00, 100);
 
             double interest = strategy.calculateInterest(deposit);
 
@@ -163,7 +152,7 @@ class PremiumInterestStrategyTest {
         @DisplayName("calculates correct interest for small balance")
         void calculatesCorrectInterest_forSmallBalance() {
             // 1000 * 0.05 / 12 = 4.166...
-            TimeDeposit deposit = new TimeDeposit(1, "premium", 1000.00, 60);
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.PREMIUM, 1000.00, 60);
 
             double interest = strategy.calculateInterest(deposit);
 
@@ -173,7 +162,7 @@ class PremiumInterestStrategyTest {
         @Test
         @DisplayName("returns 0 interest for zero balance")
         void returnsZeroInterest_forZeroBalance() {
-            TimeDeposit deposit = new TimeDeposit(1, "premium", 0.0, 60);
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.PREMIUM, 0.0, 60);
 
             double interest = strategy.calculateInterest(deposit);
 
@@ -184,7 +173,7 @@ class PremiumInterestStrategyTest {
         @DisplayName("continues to earn interest at very long durations")
         void earnsInterest_atLongDuration() {
             // 50000 * 0.05 / 12 = 208.333...
-            TimeDeposit deposit = new TimeDeposit(1, "premium", 50000.00, 1000);
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.PREMIUM, 50000.00, 1000);
 
             double interest = strategy.calculateInterest(deposit);
 
@@ -199,8 +188,8 @@ class PremiumInterestStrategyTest {
         @Test
         @DisplayName("45 days earns no interest, 46 days earns interest")
         void verifyBoundaryBehavior() {
-            TimeDeposit at45Days = new TimeDeposit(1, "premium", 50000.00, 45);
-            TimeDeposit at46Days = new TimeDeposit(2, "premium", 50000.00, 46);
+            TimeDeposit at45Days = new TimeDeposit(1, PlanType.PREMIUM, 50000.00, 45);
+            TimeDeposit at46Days = new TimeDeposit(2, PlanType.PREMIUM, 50000.00, 46);
 
             assertThat(strategy.calculateInterest(at45Days)).isEqualTo(0.0);
             assertThat(strategy.calculateInterest(at46Days)).isGreaterThan(0.0);
@@ -209,8 +198,8 @@ class PremiumInterestStrategyTest {
         @Test
         @DisplayName("large balance at boundary shows dramatic difference")
         void largeBoundaryDifference() {
-            TimeDeposit at45Days = new TimeDeposit(1, "premium", 10000000.00, 45);
-            TimeDeposit at46Days = new TimeDeposit(2, "premium", 10000000.00, 46);
+            TimeDeposit at45Days = new TimeDeposit(1, PlanType.PREMIUM, 10000000.00, 45);
+            TimeDeposit at46Days = new TimeDeposit(2, PlanType.PREMIUM, 10000000.00, 46);
 
             double interestAt45 = strategy.calculateInterest(at45Days);
             double interestAt46 = strategy.calculateInterest(at46Days);

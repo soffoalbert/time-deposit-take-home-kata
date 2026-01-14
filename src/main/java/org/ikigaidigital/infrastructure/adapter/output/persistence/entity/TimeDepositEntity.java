@@ -1,6 +1,7 @@
 package org.ikigaidigital.infrastructure.adapter.output.persistence.entity;
 
 import jakarta.persistence.*;
+import org.ikigaidigital.domain.model.PlanType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class TimeDepositEntity {
     private Integer id;
 
     @Column(name = "plan_type", nullable = false, length = 50)
-    private String planType;
+    private PlanType planType;
 
     @Column(name = "balance", nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
@@ -40,7 +41,7 @@ public class TimeDepositEntity {
     public TimeDepositEntity() {
     }
 
-    public TimeDepositEntity(String planType, BigDecimal balance, Integer days) {
+    public TimeDepositEntity(PlanType planType, BigDecimal balance, Integer days) {
         this.planType = planType;
         this.balance = balance;
         this.days = days;
@@ -68,11 +69,11 @@ public class TimeDepositEntity {
         this.id = id;
     }
 
-    public String getPlanType() {
+    public PlanType getPlanType() {
         return planType;
     }
 
-    public void setPlanType(String planType) {
+    public void setPlanType(PlanType planType) {
         this.planType = planType;
     }
 

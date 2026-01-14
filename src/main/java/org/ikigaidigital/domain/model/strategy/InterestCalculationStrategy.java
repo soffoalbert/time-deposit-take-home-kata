@@ -1,5 +1,6 @@
 package org.ikigaidigital.domain.model.strategy;
 
+import org.ikigaidigital.domain.model.PlanType;
 import org.ikigaidigital.domain.model.TimeDeposit;
 
 /**
@@ -33,6 +34,6 @@ public interface InterestCalculationStrategy {
      * @param planType the plan type to check
      * @return true if this strategy handles the given plan type
      */
-    boolean supports(String planType);
+    boolean supports(PlanType planType);
 }
 

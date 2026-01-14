@@ -2,6 +2,7 @@ package org.ikigaidigital.infrastructure.adapter.input.rest;
 
 import org.ikigaidigital.application.port.input.GetAllTimeDepositsUseCase;
 import org.ikigaidigital.application.port.input.UpdateAllBalancesUseCase;
+import org.ikigaidigital.domain.model.PlanType;
 import org.ikigaidigital.domain.model.TimeDeposit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class TimeDepositControllerIntegrationTest {
     @DisplayName("GET /api/v1/time-deposits returns list of deposits")
     void getAllTimeDeposits_returnsListOfDeposits() throws Exception {
         // Given
-        TimeDeposit deposit = new TimeDeposit(1, "basic", 10000.00, 45);
+        TimeDeposit deposit = new TimeDeposit(1, PlanType.BASIC, 10000.00, 45);
         when(getAllTimeDepositsUseCase.getAllTimeDeposits()).thenReturn(List.of(deposit));
 
         // When & Then

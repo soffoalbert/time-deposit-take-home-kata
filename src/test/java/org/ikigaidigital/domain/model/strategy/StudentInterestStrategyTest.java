@@ -1,5 +1,6 @@
 package org.ikigaidigital.domain.model.strategy;
 
+import org.ikigaidigital.domain.model.PlanType;
 import org.ikigaidigital.domain.model.TimeDeposit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,39 +35,27 @@ class StudentInterestStrategyTest {
     class SupportsMethod {
 
         @Test
-        @DisplayName("returns true for 'student' plan type")
+        @DisplayName("returns true for STUDENT plan type")
         void returnsTrue_forStudentPlanType() {
-            assertThat(strategy.supports("student")).isTrue();
+            assertThat(strategy.supports(PlanType.STUDENT)).isTrue();
         }
 
         @Test
-        @DisplayName("returns false for 'basic' plan type")
+        @DisplayName("returns false for BASIC plan type")
         void returnsFalse_forBasicPlanType() {
-            assertThat(strategy.supports("basic")).isFalse();
+            assertThat(strategy.supports(PlanType.BASIC)).isFalse();
         }
 
         @Test
-        @DisplayName("returns false for 'premium' plan type")
+        @DisplayName("returns false for PREMIUM plan type")
         void returnsFalse_forPremiumPlanType() {
-            assertThat(strategy.supports("premium")).isFalse();
+            assertThat(strategy.supports(PlanType.PREMIUM)).isFalse();
         }
 
         @Test
         @DisplayName("returns false for null plan type")
         void returnsFalse_forNullPlanType() {
             assertThat(strategy.supports(null)).isFalse();
-        }
-
-        @Test
-        @DisplayName("returns false for empty string")
-        void returnsFalse_forEmptyString() {
-            assertThat(strategy.supports("")).isFalse();
-        }
-
-        @Test
-        @DisplayName("returns false for 'STUDENT' (case sensitive)")
-        void returnsFalse_forUppercaseStudent() {
-            assertThat(strategy.supports("STUDENT")).isFalse();
         }
     }
 
@@ -78,20 +67,20 @@ class StudentInterestStrategyTest {
         @ValueSource(ints = {0, 1, 10, 15, 29, 30})
         @DisplayName("returns 0 interest during grace period")
         void returnsZeroInterest_duringGracePeriod(int days) {
-            TimeDeposit deposit = new TimeDeposit(1, "student", 5000.00, days);
-            
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.STUDENT, 5000.00, days);
+
             double interest = strategy.calculateInterest(deposit);
-            
+
             assertThat(interest).isEqualTo(0.0);
         }
 
         @Test
         @DisplayName("returns 0 interest at exactly 30 days with large balance")
         void returnsZeroInterest_atExactly30Days_withLargeBalance() {
-            TimeDeposit deposit = new TimeDeposit(1, "student", 100000.00, 30);
-            
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.STUDENT, 100000.00, 30);
+
             double interest = strategy.calculateInterest(deposit);
-            
+
             assertThat(interest).isEqualTo(0.0);
         }
     }
@@ -104,10 +93,10 @@ class StudentInterestStrategyTest {
         @DisplayName("earns interest at 31 days (just after grace period)")
         void earnsInterest_at31Days() {
             // 5000 * 0.03 / 12 = 12.50
-            TimeDeposit deposit = new TimeDeposit(1, "student", 5000.00, 31);
-            
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.STUDENT, 5000.00, 31);
+
             double interest = strategy.calculateInterest(deposit);
-            
+
             assertThat(interest).isCloseTo(12.50, within(0.01));
         }
 
@@ -115,10 +104,10 @@ class StudentInterestStrategyTest {
         @DisplayName("calculates correct monthly interest for standard balance")
         void calculatesCorrectInterest_forStandardBalance() {
             // 5000 * 0.03 / 12 = 12.50
-            TimeDeposit deposit = new TimeDeposit(1, "student", 5000.00, 100);
-            
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.STUDENT, 5000.00, 100);
+
             double interest = strategy.calculateInterest(deposit);
-            
+
             assertThat(interest).isCloseTo(12.50, within(0.01));
         }
 
@@ -126,10 +115,10 @@ class StudentInterestStrategyTest {
         @DisplayName("calculates correct interest for large balance")
         void calculatesCorrectInterest_forLargeBalance() {
             // 100000 * 0.03 / 12 = 250.00
-            TimeDeposit deposit = new TimeDeposit(1, "student", 100000.00, 200);
-            
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.STUDENT, 100000.00, 200);
+
             double interest = strategy.calculateInterest(deposit);
-            
+
             assertThat(interest).isCloseTo(250.00, within(0.01));
         }
 
@@ -137,20 +126,20 @@ class StudentInterestStrategyTest {
         @DisplayName("calculates correct interest for small balance")
         void calculatesCorrectInterest_forSmallBalance() {
             // 100 * 0.03 / 12 = 0.25
-            TimeDeposit deposit = new TimeDeposit(1, "student", 100.00, 60);
-            
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.STUDENT, 100.00, 60);
+
             double interest = strategy.calculateInterest(deposit);
-            
+
             assertThat(interest).isCloseTo(0.25, within(0.01));
         }
 
         @Test
         @DisplayName("returns 0 interest for zero balance")
         void returnsZeroInterest_forZeroBalance() {
-            TimeDeposit deposit = new TimeDeposit(1, "student", 0.0, 100);
-            
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.STUDENT, 0.0, 100);
+
             double interest = strategy.calculateInterest(deposit);
-            
+
             assertThat(interest).isEqualTo(0.0);
         }
     }
@@ -163,7 +152,7 @@ class StudentInterestStrategyTest {
         @DisplayName("earns interest at 365 days (last day of eligibility)")
         void earnsInterest_at365Days() {
             // 5000 * 0.03 / 12 = 12.50
-            TimeDeposit deposit = new TimeDeposit(1, "student", 5000.00, 365);
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.STUDENT, 5000.00, 365);
 
             double interest = strategy.calculateInterest(deposit);
 
@@ -173,7 +162,7 @@ class StudentInterestStrategyTest {
         @Test
         @DisplayName("returns 0 interest at exactly 366 days (cutoff point)")
         void returnsZeroInterest_at366Days() {
-            TimeDeposit deposit = new TimeDeposit(1, "student", 5000.00, 366);
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.STUDENT, 5000.00, 366);
 
             double interest = strategy.calculateInterest(deposit);
 
@@ -183,7 +172,7 @@ class StudentInterestStrategyTest {
         @Test
         @DisplayName("returns 0 interest at 367 days (after cutoff)")
         void returnsZeroInterest_at367Days() {
-            TimeDeposit deposit = new TimeDeposit(1, "student", 5000.00, 367);
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.STUDENT, 5000.00, 367);
 
             double interest = strategy.calculateInterest(deposit);
 
@@ -193,7 +182,7 @@ class StudentInterestStrategyTest {
         @Test
         @DisplayName("returns 0 interest at very long duration")
         void returnsZeroInterest_atVeryLongDuration() {
-            TimeDeposit deposit = new TimeDeposit(1, "student", 5000.00, 1000);
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.STUDENT, 5000.00, 1000);
 
             double interest = strategy.calculateInterest(deposit);
 
@@ -203,7 +192,7 @@ class StudentInterestStrategyTest {
         @Test
         @DisplayName("returns 0 interest at 366 days even with large balance")
         void returnsZeroInterest_at366Days_withLargeBalance() {
-            TimeDeposit deposit = new TimeDeposit(1, "student", 1000000.00, 366);
+            TimeDeposit deposit = new TimeDeposit(1, PlanType.STUDENT, 1000000.00, 366);
 
             double interest = strategy.calculateInterest(deposit);
 

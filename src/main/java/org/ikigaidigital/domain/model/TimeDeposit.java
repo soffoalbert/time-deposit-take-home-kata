@@ -6,11 +6,11 @@ package org.ikigaidigital.domain.model;
  */
 public class TimeDeposit {
     private int id;
-    private String planType;
+    private PlanType planType;
     private Double balance;
     private int days;
 
-    public TimeDeposit(int id, String planType, Double balance, int days) {
+    public TimeDeposit(int id, PlanType planType, Double balance, int days) {
         this.id = id;
         this.planType = planType;
         this.balance = balance;
@@ -19,7 +19,7 @@ public class TimeDeposit {
 
     public int getId() { return id; }
 
-    public String getPlanType() {
+    public PlanType getPlanType() {
         return planType;
     }
 

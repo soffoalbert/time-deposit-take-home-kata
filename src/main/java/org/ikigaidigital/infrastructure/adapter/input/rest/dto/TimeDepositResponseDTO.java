@@ -1,6 +1,8 @@
 package org.ikigaidigital.infrastructure.adapter.input.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.ikigaidigital.domain.model.PlanType;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,7 +16,7 @@ public record TimeDepositResponseDTO(
         Integer id,
 
         @Schema(description = "Type of plan (basic, student, premium)", example = "basic")
-        String planType,
+        PlanType planType,
 
         @Schema(description = "Current balance of the deposit", example = "10000.00")
         BigDecimal balance,
