@@ -3,6 +3,7 @@ package org.ikigaidigital.infrastructure.config;
 import org.ikigaidigital.domain.model.InterestStrategyFactory;
 import org.ikigaidigital.domain.model.TimeDepositCalculator;
 import org.ikigaidigital.domain.model.strategy.BasicInterestStrategy;
+import org.ikigaidigital.domain.model.strategy.InternalInterestStrategy;
 import org.ikigaidigital.domain.model.strategy.PremiumInterestStrategy;
 import org.ikigaidigital.domain.model.strategy.StudentInterestStrategy;
 import org.ikigaidigital.domain.model.strategy.InterestCalculationStrategy;
@@ -23,7 +24,7 @@ import java.util.List;
  * - Domain objects can be unit tested without Spring context
  *
  * Beans configured:
- * - Interest calculation strategies (Basic, Student, Premium)
+ * - Interest calculation strategies (Basic, Student, Premium, Internal)
  * - InterestStrategyFactory (aggregates strategies)
  * - TimeDepositCalculator (uses factory for calculations)
  */
@@ -58,6 +59,16 @@ public class CompositionRootConfig {
     @Bean
     public InterestCalculationStrategy premiumInterestStrategy() {
         return new PremiumInterestStrategy();
+    }
+
+    /**
+     * Create the InternalInterestStrategy bean.
+     *
+     * @return the InternalInterestStrategy instance
+     */
+    @Bean
+    public InterestCalculationStrategy internalInterestStrategy() {
+        return new InternalInterestStrategy();
     }
 
     /**

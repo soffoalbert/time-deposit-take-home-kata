@@ -15,6 +15,7 @@ import org.ikigaidigital.domain.model.TimeDeposit;
  * - BasicInterestStrategy: 1% annual rate, 30-day grace period
  * - StudentInterestStrategy: 3% annual rate, 366-day cutoff
  * - PremiumInterestStrategy: 5% annual rate, 45-day minimum
+ * - InternalInterestStrategy: 8.5% annual rate, no grace period, terminates at 300 days
  */
 public interface InterestCalculationStrategy {
 

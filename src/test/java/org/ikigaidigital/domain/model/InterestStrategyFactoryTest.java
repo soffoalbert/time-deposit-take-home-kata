@@ -1,6 +1,7 @@
 package org.ikigaidigital.domain.model;
 
 import org.ikigaidigital.domain.model.strategy.BasicInterestStrategy;
+import org.ikigaidigital.domain.model.strategy.InternalInterestStrategy;
 import org.ikigaidigital.domain.model.strategy.PremiumInterestStrategy;
 import org.ikigaidigital.domain.model.strategy.StudentInterestStrategy;
 import org.ikigaidigital.domain.model.strategy.InterestCalculationStrategy;
@@ -18,7 +19,7 @@ import static org.assertj.core.api.Assertions.within;
 
 /**
  * Unit tests for InterestStrategyFactory.
- * 
+ *
  * Tests strategy selection, delegation, and edge cases.
  */
 @DisplayName("InterestStrategyFactory Tests")
@@ -28,13 +29,15 @@ class InterestStrategyFactoryTest {
     private BasicInterestStrategy basicStrategy;
     private StudentInterestStrategy studentStrategy;
     private PremiumInterestStrategy premiumStrategy;
+    private InternalInterestStrategy internalStrategy;
 
     @BeforeEach
     void setUp() {
         basicStrategy = new BasicInterestStrategy();
         studentStrategy = new StudentInterestStrategy();
         premiumStrategy = new PremiumInterestStrategy();
-        factory = new InterestStrategyFactory(List.of(basicStrategy, studentStrategy, premiumStrategy));
+        internalStrategy = new InternalInterestStrategy();
+        factory = new InterestStrategyFactory(List.of(basicStrategy, studentStrategy, premiumStrategy, internalStrategy));
     }
 
     @Nested
@@ -63,16 +66,25 @@ class InterestStrategyFactoryTest {
         @DisplayName("returns PremiumInterestStrategy for 'premium' plan type")
         void returnsPremiumStrategy_forPremiumPlanType() {
             Optional<InterestCalculationStrategy> result = factory.getStrategy("premium");
-            
+
             assertThat(result).isPresent();
             assertThat(result.get()).isInstanceOf(PremiumInterestStrategy.class);
+        }
+
+        @Test
+        @DisplayName("returns InternalInterestStrategy for 'internal' plan type")
+        void returnsInternalStrategy_forInternalPlanType() {
+            Optional<InterestCalculationStrategy> result = factory.getStrategy("internal");
+
+            assertThat(result).isPresent();
+            assertThat(result.get()).isInstanceOf(InternalInterestStrategy.class);
         }
 
         @Test
         @DisplayName("returns empty Optional for unknown plan type")
         void returnsEmpty_forUnknownPlanType() {
             Optional<InterestCalculationStrategy> result = factory.getStrategy("unknown");
-            
+
             assertThat(result).isEmpty();
         }
 
@@ -131,20 +143,31 @@ class InterestStrategyFactoryTest {
         @DisplayName("delegates to PremiumInterestStrategy for premium plan")
         void delegatesToPremiumStrategy() {
             TimeDeposit deposit = new TimeDeposit(1, "premium", 50000.00, 60);
-            
+
             double interest = factory.calculateInterest(deposit);
-            
+
             // 50000 * 0.05 / 12 = 208.333...
             assertThat(interest).isCloseTo(208.33, within(0.01));
+        }
+
+        @Test
+        @DisplayName("delegates to InternalInterestStrategy for internal plan")
+        void delegatesToInternalStrategy() {
+            TimeDeposit deposit = new TimeDeposit(1, "internal", 10000.00, 100);
+
+            double interest = factory.calculateInterest(deposit);
+
+            // 10000 * 0.085 / 12 = 70.833...
+            assertThat(interest).isCloseTo(70.83, within(0.01));
         }
 
         @Test
         @DisplayName("returns 0.0 for unknown plan type")
         void returnsZero_forUnknownPlanType() {
             TimeDeposit deposit = new TimeDeposit(1, "unknown", 10000.00, 45);
-            
+
             double interest = factory.calculateInterest(deposit);
-            
+
             assertThat(interest).isEqualTo(0.0);
         }
 
@@ -203,6 +226,7 @@ class InterestStrategyFactoryTest {
             assertThat(emptyFactory.getStrategy("basic")).isEmpty();
             assertThat(emptyFactory.getStrategy("student")).isEmpty();
             assertThat(emptyFactory.getStrategy("premium")).isEmpty();
+            assertThat(emptyFactory.getStrategy("internal")).isEmpty();
         }
 
         @Test
